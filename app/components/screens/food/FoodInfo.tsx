@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import {layoutStyles} from '../../../styles/layout.tsx';
 import {Number} from '../../common/Number.tsx';
-import {Food} from '../../../domain/food.ts';
+import {Food} from '../../../models/food.ts';
 
 type Props = PropsWithChildren<{
     item: Food;

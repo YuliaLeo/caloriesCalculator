@@ -1,13 +1,8 @@
-import { ID } from './id.ts';
-import { ISODate } from './date.ts';
-import { Food } from './food.ts';
+import {ID} from './id.ts';
+import {ISODate} from './date.ts';
+import {Food} from './food.ts';
 import * as Yup from 'yup';
-
-export type FoodWeighted = {
-    weight: number;
-    foodId: ID;
-    food?: Food;
-}
+import {FoodWeighted, FoodWeightedForm} from './food-weighted.ts';
 
 export interface Meal {
     id: ID;
@@ -15,11 +10,6 @@ export interface Meal {
     name?: string;
     items: FoodWeighted[];
     summary?: Food;
-}
-
-export type FoodWeightedForm = {
-    weight: string;
-    foodId: string;
 }
 
 export type MealForm = {

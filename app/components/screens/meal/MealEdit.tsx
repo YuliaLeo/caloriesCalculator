@@ -1,10 +1,10 @@
-import {ScrollView, Text, View } from 'react-native';
-import React, { useEffect, useMemo, useRef } from 'react';
+import {ScrollView, Text, View, StyleSheet, ActivityIndicator} from 'react-native';
+import React, { useEffect } from 'react';
 import DatePicker from 'react-native-date-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../routes.tsx';
-import {defaultMeal, MealForm, MealSchema, toMealForm} from '../../../domain/meal.ts';
-import {FieldArray, Formik, FormikProps} from 'formik';
+import {MealSchema} from '../../../models/meal.ts';
+import {FieldArray, Formik} from 'formik';
 import {Container} from '../../common/Container.tsx';
 import {layoutStyles} from '../../../styles/layout.tsx';
 import {typoStyles} from '../../../styles/typo.tsx';
@@ -12,80 +12,40 @@ import {defaultOffset} from '../../../styles/variables.tsx';
 import {formStyles} from '../../../styles/form.tsx';
 import {Input} from '../../common/Input.tsx';
 import {FoodWeighted} from '../food/FoodWeighted.tsx';
-import {mockFood} from '../../../mocks/foods.ts';
 import {Field} from '../../common/Field.tsx';
 import {Button} from '../../common/Button.tsx';
+import {useMealViewModel} from '../../../view-models/use-meal-view-model.ts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MealEdit'>;
 
-const mealExist = {
-    id: '1',
-    date: new Date().toISOString(),
-    name: 'Обед',
-    items: [
-        { foodId: '1', weight: 150 },
-        { foodId: '2', weight: 200 },
-    ],
-    summary: {
-        id: 'summary-1',
-        name: 'Обед 1',
-        weight: 350,
-        kcal: 400,
-        protein: 20,
-        fat: 30,
-        carbs: 22,
-    },
-};
-
 export function MealEdit({navigation, route}: Props): React.JSX.Element {
-    const formRef = useRef<FormikProps<MealForm>>(null);
-
     const {id, newMealId} = route.params;
     const title = id ? 'Редактировать' : 'Добавить';
 
-    const meal: MealForm = useMemo(() => {
-        const newMeal =
-            newMealId &&
-            (() => {
-                const mealForm = toMealForm({
-                    ...mealExist!,
-                    date: new Date().toISOString(),
-                });
-
-                delete mealForm.id;
-
-                return mealForm;
-            })();
-
-        return newMeal || (mealExist ? toMealForm(mealExist) : defaultMeal());
-    }, [newMealId]);
-
     useEffect(() => {
         if (!id && !newMealId) {
-            navigation.navigate('FoodList', { selectable: true });
+            navigation.navigate('FoodList', {selectable: true});
         }
     });
 
-    useEffect(() => {
-        const { setFieldValue, values } = formRef.current!;
+    const { meal, loading, error, saveMeal, formRef } = useMealViewModel(id, newMealId);
 
-        setFieldValue(
-            'items',
-            mockFood
-                .map((foodItem) => {
-                    const foodExist = values.items.find((f) => f.foodId === foodItem.id);
-                    if (foodExist) {
-                        return foodExist;
-                    }
-
-                    return {
-                        weight: foodItem.weight.toString(),
-                        foodId: foodItem.id,
-                    };
-                })
-                .filter((f) => f !== null),
+    if (loading) {
+        return (
+            <View style={styles.messageContainer}>
+                <ActivityIndicator size="large" color="#007BFF" style={styles.activityIndicator} />
+                <Text style={styles.loadingText}>Загрузка...</Text>
+            </View>
         );
-    }, [formRef]);
+    }
+
+    if (error) {
+        return (
+            <View style={styles.messageContainer}>
+                <Text style={styles.errorText}>{error}</Text>
+            </View>
+        );
+    }
 
     return (
         <Formik
@@ -93,6 +53,7 @@ export function MealEdit({navigation, route}: Props): React.JSX.Element {
             initialValues={meal}
             validationSchema={MealSchema}
             onSubmit={() => {
+                saveMeal();
                 navigation.goBack();
             }}>
             {({setFieldValue, handleChange, handleBlur, handleSubmit, values}) => (
@@ -176,3 +137,25 @@ export function MealEdit({navigation, route}: Props): React.JSX.Element {
         </Formik>
     );
 }
+
+const styles = StyleSheet.create({
+    messageContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    loadingText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#007BFF',
+    },
+    errorText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#FF3B30',
+    },
+    activityIndicator: {
+        marginBottom: 20,
+    },
+});

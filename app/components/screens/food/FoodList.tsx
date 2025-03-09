@@ -5,7 +5,7 @@ import { FoodEditCta } from './FoodEditCta.tsx';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../routes.tsx';
 import {meals} from '../../../mocks/meals.ts';
-import {groupByUsing} from '../../../domain/meal-groups.ts';
+import {groupByUsing} from '../../../models/meal-groups.ts';
 import {mockFood} from '../../../mocks/foods.ts';
 import {Container} from '../../common/Container.tsx';
 import {layoutStyles} from '../../../styles/layout.tsx';

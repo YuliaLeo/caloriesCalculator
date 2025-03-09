@@ -1,4 +1,4 @@
-import { ID } from './domain/id.ts';
+import { ID } from './models/id.ts';
 
 export type RootStackParamList = {
     MealList: undefined;

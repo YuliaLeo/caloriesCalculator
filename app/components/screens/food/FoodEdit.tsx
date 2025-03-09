@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../routes.tsx';
 import {mockFood} from '../../../mocks/foods.ts';
-import {FoodForm, FoodSchema} from '../../../domain/food.ts';
+import {FoodForm, FoodSchema} from '../../../models/food.ts';
 import {Container} from '../../common/Container.tsx';
 import {layoutStyles} from '../../../styles/layout.tsx';
 import {typoStyles} from '../../../styles/typo.tsx';

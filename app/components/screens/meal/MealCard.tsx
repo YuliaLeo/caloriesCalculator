@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useMemo, useState } from 'react';
 import {View} from 'react-native';
 import { MealEditCta } from './MealEditCta.tsx';
-import {Meal} from '../../../domain/meal.ts';
+import {Meal} from '../../../models/meal.ts';
 import {Card} from '../../common/Card.tsx';
 import {defaultOffset} from '../../../styles/variables.tsx';
 import {layoutStyles} from '../../../styles/layout.tsx';

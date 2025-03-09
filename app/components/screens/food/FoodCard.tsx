@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { Pressable, Switch, Text, View } from 'react-native';
-import {Food} from '../../../domain/food.ts';
-import {ID} from '../../../domain/id.ts';
+import {Food} from '../../../models/food.ts';
+import {ID} from '../../../models/id.ts';
 import {Card} from '../../common/Card.tsx';
 import {layoutStyles} from '../../../styles/layout.tsx';
 import {typoStyles} from '../../../styles/typo.tsx';

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useMemo } from 'react';
-import {Meal} from '../../domain/meal.ts';
-import {summary} from '../../domain/summary.ts';
+import {Meal} from '../../models/meal.ts';
+import {summary} from '../../models/summary.ts';
 import {FoodCard} from '../screens/food/FoodCard.tsx';
 
 

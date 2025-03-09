@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { FoodCard } from './FoodCard.tsx';
-import {FoodWeightedForm} from '../../../domain/meal.ts';
 import {mockFood} from '../../../mocks/foods.ts';
+import {FoodWeightedForm} from "../../../models/food-weighted.ts";
 
 type Props = PropsWithChildren<{
     index?: number;

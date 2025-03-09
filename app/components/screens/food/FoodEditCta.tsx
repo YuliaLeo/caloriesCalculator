@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../routes.tsx';
-import {ID} from '../../../domain/id.ts';
+import {ID} from '../../../models/id.ts';
 import {Button} from '../../common/Button.tsx';
 
 

@@ -1,4 +1,4 @@
-import {Food} from "../domain/food.ts";
+import {Food} from "../models/food.ts";
 
 export const mockFood: Food[] = [
     {
