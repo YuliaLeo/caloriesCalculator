@@ -53,6 +53,30 @@ export interface FoodForm {
     salt?: string;
 }
 
+export const defaultFood = (defaultName?: string): FoodForm => ({
+    name: defaultName || '',
+    weight: '100',
+    kcal: '',
+    protein: '',
+    fat: '',
+    carbs: '',
+    fiber: '0',
+    salt: '0',
+});
+
+export function toFoodForm(food: Food): FoodForm {
+    return {
+        ...food,
+        weight: food.weight.toString(),
+        kcal: food.kcal.toString(),
+        protein: food.protein.toString(),
+        fat: food.fat.toString(),
+        carbs: food.carbs.toString(),
+        fiber: food.fiber ? food.fiber.toString() : '0',
+        salt: food.salt ? food.salt.toString() : '0',
+    };
+}
+
 export const FoodSchema = Yup.object().shape({
     name: Yup.string()
         .min(1)

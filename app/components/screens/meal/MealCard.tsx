@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useMemo, useState } from 'react';
-import {View} from 'react-native';
+import {Alert, View} from 'react-native';
 import { MealEditCta } from './MealEditCta.tsx';
 import {Meal} from '../../../models/meal.ts';
 import {Card} from '../../common/Card.tsx';
@@ -8,6 +8,8 @@ import {layoutStyles} from '../../../styles/layout.tsx';
 import {Summary} from '../../common/Summary.tsx';
 import {Button} from '../../common/Button.tsx';
 import {FoodCard} from '../food/FoodCard.tsx';
+import {useAppDispatch} from '../../../domain/hooks.ts';
+import {removeMeal} from '../../../store/meal.tsx';
 
 type Props = PropsWithChildren<{
     item: Meal;
@@ -15,6 +17,8 @@ type Props = PropsWithChildren<{
 
 export function MealCard({item}: Props): React.JSX.Element {
     const [expanded, setExpanded] = useState(false);
+
+    const dispatch = useAppDispatch();
 
     const toggleExpand = () => setExpanded(!expanded);
 
@@ -33,6 +37,19 @@ export function MealCard({item}: Props): React.JSX.Element {
         });
     }, [item.items]);
 
+    const confirmRemove = () =>
+        Alert.alert('Confirm action', 'Are you sure?', [
+            {
+                text: 'Отменить',
+                style: 'cancel',
+            },
+            {
+                text: 'Удалить',
+                onPress: () => dispatch(removeMeal(item.id)),
+                style: 'destructive',
+            },
+        ]);
+
     return (
         <Card out={true}>
             {item.name ? (
@@ -50,7 +67,7 @@ export function MealCard({item}: Props): React.JSX.Element {
 
                 <Button
                     title="Удалить"
-                    onPress={() => {}}
+                    onPress={confirmRemove}
                 />
             </View>
         </Card>

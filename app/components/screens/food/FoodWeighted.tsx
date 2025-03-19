@@ -1,7 +1,9 @@
-import React, { PropsWithChildren } from 'react';
+import React, {PropsWithChildren, useMemo} from 'react';
 import { FoodCard } from './FoodCard.tsx';
-import {mockFood} from '../../../mocks/foods.ts';
-import {FoodWeightedForm} from "../../../models/food-weighted.ts";
+import {FoodWeightedForm} from '../../../models/food-weighted.ts';
+import {useAppSelector} from '../../../domain/hooks.ts';
+import {foodWeighted} from '../../../models/food.ts';
+import {food} from '../../../store/store.ts';
 
 type Props = PropsWithChildren<{
     index?: number;
@@ -15,7 +17,14 @@ export function FoodWeighted(
         fw,
         removeFn,
     }: Props): React.JSX.Element | null {
-    const result = mockFood[0];
+    const foodState = useAppSelector(food);
+
+    const result = useMemo(() => {
+        const foodExist = foodState.find(f => f.id === fw.foodId);
+        return foodExist
+            ? foodWeighted(foodExist, parseFloat(fw.weight) || 0)
+            : null;
+    }, [fw, foodState]);
 
     return result ? (
         <FoodCard

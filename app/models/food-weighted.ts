@@ -6,6 +6,7 @@ export type FoodWeighted = {
     foodId: ID;
     food?: Food;
 }
+
 export type FoodWeightedForm = {
     weight: string;
     foodId: string;

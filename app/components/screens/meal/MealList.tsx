@@ -15,6 +15,8 @@ import {MealCard} from './MealCard.tsx';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../routes.tsx';
 import {useMealListViewModel} from '../../../view-models/use-meal-list-view-model.ts';
+import {Loading} from '../../common/Loading.tsx';
+import {Error} from '../../common/Error.tsx';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MealList'>;
 
@@ -27,7 +29,21 @@ function MealList({navigation}: Props): React.JSX.Element {
         visible,
         filteredGroups,
         toggleVisible,
+        loading,
+        error,
     } = useMealListViewModel();
+
+    if (loading) {
+        return (
+            <Loading />
+        );
+    }
+
+    if (error) {
+        return (
+            <Error error={error} />
+        );
+    }
 
     return (
         <Container>

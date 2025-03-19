@@ -3,8 +3,7 @@ import React, { useMemo } from 'react';
 import { Formik } from 'formik';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../../routes.tsx';
-import {mockFood} from '../../../mocks/foods.ts';
-import {FoodForm, FoodSchema} from '../../../models/food.ts';
+import {defaultFood, FoodForm, FoodSchema, toFoodForm} from '../../../models/food.ts';
 import {Container} from '../../common/Container.tsx';
 import {layoutStyles} from '../../../styles/layout.tsx';
 import {typoStyles} from '../../../styles/typo.tsx';
@@ -12,18 +11,47 @@ import {formStyles} from '../../../styles/form.tsx';
 import {Field} from '../../common/Field.tsx';
 import {Input} from '../../common/Input.tsx';
 import {Button} from '../../common/Button.tsx';
+import {useAppDispatch, useAppSelector} from '../../../domain/hooks.ts';
+import {generateId} from '../../../models/id.ts';
+import {addFood, findFoodById, updateFood} from '../../../store/food.tsx';
+import {setSelection} from '../../../store/selection.tsx';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FoodEdit'>;
 
 export function FoodEdit({navigation, route}: Props): React.JSX.Element {
+    const dispatch = useAppDispatch();
+
     const id = route.params.id;
+
+    const defaultName = useAppSelector(state => state.food.defaultName);
+
+    const exist = useAppSelector(state => findFoodById(state, id));
     const food = useMemo(() => {
-        return mockFood[0];
-    }, []);
+        return exist ? toFoodForm(exist) : defaultFood(defaultName);
+    }, [defaultName, exist]);
+
+    const selection = useAppSelector(state => state.selection.items);
 
     const submitForm = (values: FoodForm) => {
         const foodEdit = FoodSchema.cast(values);
         foodEdit.name = foodEdit.name?.trim();
+
+        if (food.id) {
+            dispatch(updateFood({id: food.id, body: foodEdit}));
+        } else {
+            const newId = generateId();
+
+            dispatch(addFood({
+                ...foodEdit,
+                id: newId,
+            }));
+
+            dispatch(setSelection([
+                ...selection,
+                newId,
+            ]));
+        }
+
         navigation.goBack();
     };
 

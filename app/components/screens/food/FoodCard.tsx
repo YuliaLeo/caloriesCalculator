@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { Pressable, Switch, Text, View } from 'react-native';
+import {Alert, Pressable, Switch, Text, View} from 'react-native';
 import {Food} from '../../../models/food.ts';
 import {ID} from '../../../models/id.ts';
 import {Card} from '../../common/Card.tsx';
@@ -8,7 +8,9 @@ import {typoStyles} from '../../../styles/typo.tsx';
 import {FoodInfo} from './FoodInfo.tsx';
 import {primaryColor} from '../../../styles/variables.tsx';
 import {FoodEditCta} from './FoodEditCta.tsx';
-import {Button} from "../../common/Button.tsx";
+import {Button} from '../../common/Button.tsx';
+import {useAppDispatch} from '../../../domain/hooks.ts';
+import {removeFood} from '../../../store/food.tsx';
 
 type Props = PropsWithChildren<{
     index?: number;
@@ -32,6 +34,21 @@ export function FoodCard(
         readonly,
         onPress,
     }: Props): React.JSX.Element {
+    const dispatch = useAppDispatch();
+
+    const confirmRemove = () =>
+        Alert.alert('Confirm action', 'Are you sure?', [
+            {
+                text: 'Отменить',
+                style: 'cancel',
+            },
+            {
+                text: 'Удалить',
+                onPress: () => dispatch(removeFood(item.id)),
+                style: 'destructive',
+            },
+        ]);
+
     return (
         <Card>
             <View style={{...layoutStyles.row, alignItems: 'flex-start'}}>
@@ -59,7 +76,7 @@ export function FoodCard(
                     <FoodEditCta id={item.id} />
 
                     <Button
-                        onPress={() => {}}
+                        onPress={confirmRemove}
                         title="Удалить"
                     />
                 </View>

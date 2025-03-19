@@ -1,4 +1,4 @@
-import {ScrollView, Text, View, StyleSheet, ActivityIndicator} from 'react-native';
+import {ScrollView, Text, View} from 'react-native';
 import React, { useEffect } from 'react';
 import DatePicker from 'react-native-date-picker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -15,12 +15,17 @@ import {FoodWeighted} from '../food/FoodWeighted.tsx';
 import {Field} from '../../common/Field.tsx';
 import {Button} from '../../common/Button.tsx';
 import {useMealViewModel} from '../../../view-models/use-meal-view-model.ts';
+import {useAppDispatch} from '../../../domain/hooks.ts';
+import {removeFromSelection} from '../../../store/selection.tsx';
+import {Error} from '../../common/Error.tsx';
+import {Loading} from '../../common/Loading.tsx';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MealEdit'>;
 
 export function MealEdit({navigation, route}: Props): React.JSX.Element {
     const {id, newMealId} = route.params;
     const title = id ? 'Редактировать' : 'Добавить';
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (!id && !newMealId) {
@@ -32,18 +37,13 @@ export function MealEdit({navigation, route}: Props): React.JSX.Element {
 
     if (loading) {
         return (
-            <View style={styles.messageContainer}>
-                <ActivityIndicator size="large" color="#007BFF" style={styles.activityIndicator} />
-                <Text style={styles.loadingText}>Загрузка...</Text>
-            </View>
+            <Loading />
         );
     }
 
     if (error) {
         return (
-            <View style={styles.messageContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
+            <Error error={error} />
         );
     }
 
@@ -52,8 +52,8 @@ export function MealEdit({navigation, route}: Props): React.JSX.Element {
             innerRef={formRef}
             initialValues={meal}
             validationSchema={MealSchema}
-            onSubmit={() => {
-                saveMeal();
+            onSubmit={(values) => {
+                saveMeal(values);
                 navigation.goBack();
             }}>
             {({setFieldValue, handleChange, handleBlur, handleSubmit, values}) => (
@@ -82,6 +82,7 @@ export function MealEdit({navigation, route}: Props): React.JSX.Element {
                                                     fw={foodItem}
                                                     removeFn={() => {
                                                         arrayHelpers.remove(index);
+                                                        dispatch(removeFromSelection(foodItem.foodId));
                                                     }}
                                                 />
 
@@ -138,24 +139,3 @@ export function MealEdit({navigation, route}: Props): React.JSX.Element {
     );
 }
 
-const styles = StyleSheet.create({
-    messageContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    loadingText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#007BFF',
-    },
-    errorText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#FF3B30',
-    },
-    activityIndicator: {
-        marginBottom: 20,
-    },
-});

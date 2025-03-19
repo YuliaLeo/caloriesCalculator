@@ -1,15 +1,31 @@
-import {useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {DateGroup} from '../models/date.ts';
-import {MealGroup} from '../models/meal-groups.ts';
-import {meals} from '../mocks/meals.ts';
+import {MealGroup, mealGroups} from '../models/meal-groups.ts';
 import {ID} from '../models/id.ts';
+import {useAppDispatch, useAppSelector} from '../domain/hooks.ts';
+import {food, meal} from '../store/store.ts';
+import {fetchMeals} from '../store/meal.tsx';
 
 export function useMealListViewModel() {
+    const mealState = useAppSelector(meal);
+    const foodState = useAppSelector(food);
+
+    const dispatch = useAppDispatch();
+
     const [search, setSearch] = useState<string>('');
     const [dateGroup, setDateGroup] = useState<DateGroup>('day');
     const [visible, setVisible] = useState<Record<ID, boolean>>({});
 
-    const groups: MealGroup[] = useMemo(() => meals, []);
+    const loading = useAppSelector(state => state.meal.isLoading);
+    const error = useAppSelector(state => state.meal.error);
+
+    useEffect(() => {
+        dispatch(fetchMeals());
+    }, [dispatch]);
+
+    const groups = useMemo(() => {
+        return mealGroups(mealState, foodState, dateGroup);
+    }, [mealState, foodState, dateGroup]);
 
     const filteredGroups: MealGroup[] = useMemo(() => {
         if (!search) {
@@ -40,12 +56,31 @@ export function useMealListViewModel() {
         }, [] as MealGroup[]);
     }, [groups, search]);
 
+    useEffect(() => {
+        setSearch('');
+    }, [mealState]);
+
     const toggleVisible = (id: ID) => {
-        setVisible(prevVisible => ({
-            ...prevVisible,
-            [id]: !prevVisible[id],
-        }));
+        setVisible({
+            ...visible,
+            [id]: !visible[id],
+        });
     };
+
+    useEffect(() => {
+        if (!filteredGroups.length) {
+            return;
+        }
+
+        if (!search) {
+            setVisible({
+                [filteredGroups[0].rangeAsString]: true,
+            });
+        } else {
+            const ids = filteredGroups.map(group => group.rangeAsString);
+            setVisible(ids.reduce((acc, id) => ({...acc, [id]: true}), {}));
+        }
+    }, [search, filteredGroups]);
 
     return {
         search,
@@ -56,5 +91,7 @@ export function useMealListViewModel() {
         setVisible,
         filteredGroups,
         toggleVisible,
+        loading,
+        error,
     };
 }
